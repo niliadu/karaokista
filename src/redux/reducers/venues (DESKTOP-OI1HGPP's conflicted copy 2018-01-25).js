@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export default function venuesReducer(state={
     firstLoad: true,
     list: {}
@@ -12,7 +14,9 @@ export default function venuesReducer(state={
             break;
         }
         case "ADDED_VENUE":{
-            console.log("ADDED_VENUE");
+            toast.success(action.value.name + " was added successfully!", {
+                position: toast.POSITION.BOTTOM_RIGHT
+            });
             break;
         }
     }

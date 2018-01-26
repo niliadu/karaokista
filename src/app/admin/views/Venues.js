@@ -45,7 +45,10 @@ class Venues extends Component {
         return (
         <div className="row" key={"row_"+i}>
           <div className="col-md-12">
-            <h5>{list[id].name}</h5>
+            <h5>
+              {list[id].name}
+              <i className="icon-close btn btn-lg pull-right"/>
+            </h5>
           </div>
         </div>
       );
@@ -55,7 +58,8 @@ class Venues extends Component {
       <div className="animated fadeIn">
         <div className="card">
           <div className="card-header">
-            <i className="icon-location-pin"></i> Venues List&nbsp;&nbsp;
+            <i className="icon-location-pin"/>
+            Venues List&nbsp;&nbsp;
             <i id="addPopover" className="btn icon-plus font-success" onClick={this.toogleAddPopover.bind(this)}></i>
             <Popover placement="bottom" isOpen={addPopoverOpen} target="addPopover">
               <PopoverHeader>
@@ -77,65 +81,8 @@ class Venues extends Component {
               </PopoverBody>
             </Popover>
           </div>
-          <div className="card-body">{mappedList}</div>
-        </div>
-        <div className="card">
-          <div className="card-header">
-            <i className="icon-drop"></i> Grays
-          </div>
           <div className="card-body">
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <div className="p-3 bg-gray-100">100</div>
-                <div className="p-3 bg-gray-200">200</div>
-                <div className="p-3 bg-gray-300">300</div>
-                <div className="p-3 bg-gray-400">400</div>
-                <div className="p-3 bg-gray-500">500</div>
-                <div className="p-3 bg-gray-600">600</div>
-                <div className="p-3 bg-gray-700">700</div>
-                <div className="p-3 bg-gray-800">800</div>
-                <div className="p-3 bg-gray-900">900</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-header">
-            <i className="icon-drop"></i> Additional colors
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-blue">Blue</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-indigo">Indigo</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-purple">Purple</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-pink">Pink</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-red">Red</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-orange">Orange</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-yellow">Yellow</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-green">Green</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-teal">Teal</div>
-              </div>
-              <div className="col-md-4">
-                <div className="p-3 mb-3 bg-cyan">Cyan</div>
-              </div>
-            </div>
+            {mappedList}
           </div>
         </div>
       </div>

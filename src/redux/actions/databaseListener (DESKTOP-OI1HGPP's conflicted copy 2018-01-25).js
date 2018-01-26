@@ -15,12 +15,13 @@ fire.database().ref('/global/').on('child_changed', snap => {
     }
 });
 
-fire.database().ref('/venues/').on('child_added', snap => {
+fire.database().ref('/venues/').on('child_added', async(snap) => {
         if(store.getState().venues.firstLoad) return
         
-        venues.getVenues();
+        await venues.getVenues();
         
         store.dispatch({
             type: "ADDED_VENUE",
+            value: snap.val()
         });            
 });

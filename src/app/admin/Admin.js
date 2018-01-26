@@ -6,6 +6,7 @@ import Sidebar from '../../components/Sidebar/';
 import Breadcrumb from '../../components/Breadcrumb';
 import Aside from '../../components/Aside/';
 import Footer from '../../components/Footer/';
+import { ToastContainer } from "react-toastify";
 
 import Dashboard  from './views/Dashboard';
 import Venues from './views/Venues';
@@ -29,6 +30,7 @@ class Admin extends Component {
           </main>
           <Aside />
         </div>
+        <ToastContainer/>
         <Footer />
       </div>
     );
