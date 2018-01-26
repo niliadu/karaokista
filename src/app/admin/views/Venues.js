@@ -19,7 +19,8 @@ class Venues extends Component {
     super();
     this.state = {
       addPopoverOpen: false,
-      disableAddNew: false
+      disableAddNew: false,
+
     };
   }
   componentWillMount(){
@@ -37,6 +38,10 @@ class Venues extends Component {
     this.toogleAddPopover();
   }
 
+  removeVenue(id){
+    venuesdActions.removeVenue(id);
+  }
+
   render() {
     const { dispatch, list} = this.props;
     const { addPopoverOpen, disableAddNew } = this.state;
@@ -47,7 +52,7 @@ class Venues extends Component {
           <div className="col-md-12">
             <h5>
               {list[id].name}
-              <i className="icon-close btn btn-lg pull-right"/>
+              <i className="icon-close btn btn-lg pull-right" onClick={this.removeVenue.bind(null,id)}/>
             </h5>
           </div>
         </div>
