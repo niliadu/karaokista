@@ -22,6 +22,17 @@ fire.database().ref('/venues/').on('child_added', async(snap) => {
         
         store.dispatch({
             type: "ADDED_VENUE",
-            value: snap.key
+            value: snap.val()
         });            
+});
+
+fire.database().ref('/venues/').on('child_removed', async(snap) => {
+    if(store.getState().venues.firstLoad) return
+    
+    await venues.getVenues();
+    
+    store.dispatch({
+        type: "REMOVED_VENUE",
+        value: snap.val()
+    });            
 });

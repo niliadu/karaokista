@@ -19,3 +19,7 @@ export function getVenues(){
 export function addNewVenue(name){
     fire.database().ref('/venues').push({name});
 }
+
+export function removeVenue(id){
+    fire.database().ref('/venues').child(id).remove();
+}
