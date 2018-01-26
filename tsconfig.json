@@ -1,0 +1,7 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "allowJs": true
+    }
+}
+//eleminates the error in VScode about the decorators used for connecting the store and the react elements
