@@ -7,6 +7,7 @@ import store from "../../../redux/store";
 import { connect } from 'react-redux';
 
 import * as dashboardActions from "../../../redux/actions/dashboard";
+import * as globalActions from "../../../redux/actions/global";
 
 @connect((store) => {
   return {
@@ -17,6 +18,7 @@ import * as dashboardActions from "../../../redux/actions/dashboard";
 class Dashboard extends Component {
   
   componentWillMount(){
+    globalActions.setCurrentAdminView("dashboard");
     dashboardActions.getGlobals();
   }
 

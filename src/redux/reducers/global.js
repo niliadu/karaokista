@@ -1,5 +1,6 @@
 export default function globalReducer(state={
-    liveIsON: false
+    liveIsON: false,
+    currentView: ""
 }, action){
     switch(action.type){
         case "LIVE_IS_ON_CHANGED":{
@@ -12,7 +13,15 @@ export default function globalReducer(state={
         case "GLOBALS_RECEVIED":{
             global = action.value;
             state = {
-                ...global
+                ...global,
+                currentView: state.currentView
+                };
+            break;
+        }
+        case "CURRENT_VIEW_SET":{
+            state = {
+                ...state,
+                currentView: action.value
                 };
             break;
         }
