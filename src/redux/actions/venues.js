@@ -16,8 +16,12 @@ export function getVenues(){
     });
 }
 
-export function addNewVenue(name){
-    fire.database().ref('/venues').push({name});
+export function addVenue(venue){
+    fire.database().ref('/venues').push(venue);
+}
+
+export function updateVenue(id, venue){
+    fire.database().ref('/venues').child(id).update(venue);
 }
 
 export function removeVenue(id){

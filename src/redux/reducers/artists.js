@@ -6,7 +6,7 @@ export default function venuesReducer(state={
     list: {},
 }, action){
     switch(action.type){
-        case "VENUES_RECEVIED":{
+        case "ARTISTS_RECEVIED":{
             state = {
                 ...state,
                 firstLoad: false,
@@ -14,26 +14,26 @@ export default function venuesReducer(state={
             };
             break;
         }
-        case "ADDED_VENUE":{
-            if(store.getState().global.currentView != "venues") break;
+        case "ADDED_ARTIST":{
+            if(store.getState().global.currentView != "artists") break;
 
-            toast.success('Venue "' + action.value.name + '" was added!', {
+            toast.success('Artist "' + action.value.name + '" was added!', {
                 position: toast.POSITION.BOTTOM_RIGHT
             });
             break;
         }
-        case "UPDATED_VENUE":{
-            if(store.getState().global.currentView != "venues") break;
+        case "UPDATED_ARTIST":{
+            if(store.getState().global.currentView != "artists") break;
 
-            toast.warn('Venue "' + action.value.name + '" was updated!', {
+            toast.warn('Artist "' + action.value.name + '" was updated!', {
                 position: toast.POSITION.BOTTOM_RIGHT
             });
             break;
         }
-        case "REMOVED_VENUE":{
-            if(store.getState().global.currentView != "venues") break;
+        case "REMOVED_ARTIST":{
+            if(store.getState().global.currentView != "artists") break;
 
-            toast.warn('Venue "' + action.value.name + '" was removed!', {
+            toast.warn('Artist "' + action.value.name + '" was removed!', {
                 position: toast.POSITION.BOTTOM_RIGHT,
                 className: {
                     color: "black"

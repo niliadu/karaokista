@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 
 import Dashboard  from './views/Dashboard';
 import Venues from './views/Venues';
+import Artists from './views/Artists';
 
 class Admin extends Component {
   render() {
@@ -25,6 +26,7 @@ class Admin extends Component {
               <Switch>
                 <Route exact path="/admin" name="Dashboard" component={Dashboard}/>
                 <Route path="/admin/venues" name="Venues" component={Venues}/>
+                <Route path="/admin/artists" name="Artists" component={Artists}/>
               </Switch>
             </Container>
           </main>

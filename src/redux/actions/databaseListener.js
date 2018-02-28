@@ -1,6 +1,7 @@
-import fire from "../../fireInit"
-import store from "../store"
-import * as venues from "./venues"
+import fire from "../../fireInit";
+import store from "../store";
+import * as venues from "./venues";
+import * as artists from "./artists";
 
 //get changes in the root of 
 fire.database().ref('/global/').on('child_changed', snap => {
@@ -33,6 +34,50 @@ fire.database().ref('/venues/').on('child_removed', async(snap) => {
     
     store.dispatch({
         type: "REMOVED_VENUE",
+        value: snap.val()
+    });            
+});
+
+fire.database().ref('/venues/').on('child_changed', async(snap) => {
+    if(store.getState().venues.firstLoad) return
+    
+    await venues.getVenues();
+    
+    store.dispatch({
+        type: "UPDATED_VENUE",
+        value: snap.val()
+    });            
+});
+
+fire.database().ref('/artists/').on('child_added', async(snap) => {
+    if(store.getState().artists.firstLoad) return
+    
+    await artists.getArtists();
+    
+    store.dispatch({
+        type: "ADDED_ARTIST",
+        value: snap.val()
+    });            
+});
+
+fire.database().ref('/artists/').on('child_removed', async(snap) => {
+    if(store.getState().artists.firstLoad) return
+
+    await artists.getArtists();
+
+    store.dispatch({
+        type: "REMOVED_ARTIST",
+        value: snap.val()
+    });            
+});
+
+fire.database().ref('/artists/').on('child_changed', async(snap) => {
+    if(store.getState().artists.firstLoad) return
+
+    await artists.getArtists();
+
+    store.dispatch({
+        type: "UPDATED_ARTIST",
         value: snap.val()
     });            
 });
