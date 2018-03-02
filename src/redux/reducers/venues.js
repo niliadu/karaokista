@@ -41,6 +41,6 @@ export default function venuesReducer(state={
             });
             break;
         }
-z    }
+    }
     return state;
 }

@@ -1,12 +1,12 @@
 import { toast } from "react-toastify";
 import store from "../store";
 
-export default function artistsReducer(state={
+export default function musicsReducer(state={
     firstLoad: true,
     list: {},
 }, action){
     switch(action.type){
-        case "ARTISTS_RECEVIED":{
+        case "MUSICS_RECEVIED":{
             state = {
                 ...state,
                 firstLoad: false,
@@ -14,26 +14,26 @@ export default function artistsReducer(state={
             };
             break;
         }
-        case "ADDED_ARTIST":{
-            if(store.getState().global.currentView != "artists") break;
+        case "ADDED_MUSIC":{
+            if(store.getState().global.currentView != "musics") break;
 
-            toast.success('Artist "' + action.value.name + '" was added!', {
+            toast.success('Music "' + action.value.name + '" was added!', {
                 position: toast.POSITION.BOTTOM_RIGHT
             });
             break;
         }
-        case "UPDATED_ARTIST":{
-            if(store.getState().global.currentView != "artists") break;
+        case "UPDATED_MUSIC":{
+            if(store.getState().global.currentView != "musics") break;
 
-            toast.warn('Artist "' + action.value.name + '" was updated!', {
+            toast.warn('Music "' + action.value.name + '" was updated!', {
                 position: toast.POSITION.BOTTOM_RIGHT
             });
             break;
         }
-        case "REMOVED_ARTIST":{
-            if(store.getState().global.currentView != "artists") break;
+        case "REMOVED_MUSIC":{
+            if(store.getState().global.currentView != "musics") break;
 
-            toast.warn('Artist "' + action.value.name + '" was removed!', {
+            toast.warn('Music "' + action.value.name + '" was removed!', {
                 position: toast.POSITION.BOTTOM_RIGHT,
                 className: {
                     color: "black"
