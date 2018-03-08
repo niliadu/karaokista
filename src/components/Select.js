@@ -2,27 +2,19 @@ import React from 'react';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 export default class Select extends React.Component {
+
   constructor(props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
     
-    let { label, options, width, search } = this.props; 
+    let { label, options, selected } = this.props; 
     
-    if(!label) label = "Select an option";
-    if(!options) options = [];
-    if(!width) width = "100%";
-    search = !search ? false : true;
-    
-
     this.state = {
       dropdownOpen: false,
       label,
       options,
-      defaultOptions: options,
-      width,
-      selectedOption: "",
-      search
+      selectedOption : selected,
     };
   }
 
@@ -44,7 +36,7 @@ export default class Select extends React.Component {
   }  
 
   componentDidUpdate(){
-    if(this.state.search) this.searchRef.focus();
+    if(this.props.search) this.searchRef.focus();
   }
 
   searchValue(){
@@ -55,7 +47,7 @@ export default class Select extends React.Component {
     if(_searchValue == ""){
       this.setState({
         ...this.state,
-        options: this.state.defaultOptions
+        options: this.props.options
       });
 
       return;
@@ -75,24 +67,27 @@ export default class Select extends React.Component {
   }
 
   render() {
-    let { label, options, search } = this.state;
+    let { label, options, selectedOption } = this.state;
     
-    const dropdownListStyle = {
-      width: this.state.width,
-      height: 'auto',
-      maxHeight: '200px',
-      overflowX: 'hidden'
-    };
+    if(selectedOption != null){
+      selectedOption = options.find(option => option.value == selectedOption);
+      label = selectedOption.label ? selectedOption.label : selectedOption.value;
+    }
 
     const mappedOptions = options.map((option,i) =>{
+      const styleItem = {
+        visibility: option.value == this.state.selectedOption ? "visible" : "hidden"
+      } 
       return (
-        <DropdownItem key={i} onClick={this.onClickOption.bind(this, option)}>{option.label ? option.label : option.value}</DropdownItem>
+        <DropdownItem key={i} onClick={this.onClickOption.bind(this, option)}>
+          <i className="icon-check" style={styleItem}/>
+          {option.label ? option.label : option.value}</DropdownItem>
       );
     });
 
     return (
-      <ButtonDropdown direction="down" isOpen={this.state.dropdownOpen} toggle={this.toggle} style={{width: this.state.width}}>
-        <DropdownToggle size="lg" style={{width: this.state.width}}>
+      <ButtonDropdown direction="down" isOpen={this.state.dropdownOpen} toggle={this.toggle} style={{width: this.props.width}}>
+        <DropdownToggle size={this.props.size} style={{width: "100%"}}>
           <div className="col-xs-10 pull-left">
             {label}
           </div>
@@ -100,8 +95,8 @@ export default class Select extends React.Component {
             <i className="icon-arrow-down"/>
           </div>
         </DropdownToggle>
-        <DropdownMenu  style={{width: this.state.width}}>
-          { this.state.search &&
+        <DropdownMenu style={{width: "100%"}}>
+          { this.props.search &&
             <input
               key="search"
               ref={(_this) => this.searchRef = _this} 
@@ -111,11 +106,25 @@ export default class Select extends React.Component {
               placeholder="Search here"
             />
           }
-          <div style={dropdownListStyle}>
+          <div style={{
+                width: "100%",
+                height: 'auto',
+                maxHeight: '200px',
+                overflowX: 'hidden'
+            }}>
             {mappedOptions}
           </div>
         </DropdownMenu>
       </ButtonDropdown>
     );
   }
+}
+
+Select.defaultProps = {
+  label: "Select an option",
+  options: [],
+  width: "100%",
+  search: false,
+  selected: null,
+  size: "lg"
 }

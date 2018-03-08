@@ -21,7 +21,7 @@ export function addMusic(music){
 }
 
 export function updateMusic(id, music){
-    fire.database().ref('/music').child(id).update(music);
+    fire.database().ref('/musics').child(id).update(music);
 }
 
 export function removeMusic(id){

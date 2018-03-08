@@ -33,7 +33,7 @@ class Artists extends Component {
     artistsActions.getArtists();
   }
   
-  toogleModal(type, id){
+  toggleModal(type, id){
     let {
       modalOpen, 
       modalTitle, 
@@ -49,6 +49,7 @@ class Artists extends Component {
       case "add":{
         modalTitle = "New Artist";
         editingId = null;
+        console.log("add",modalOpen);
         break;
       }
       case "edit":{
@@ -60,6 +61,7 @@ class Artists extends Component {
         break;
       }
     }
+    console.log("toggle",modalOpen);
     this.setState({
       ...this.state, 
       modalOpen: !modalOpen, 
@@ -67,7 +69,7 @@ class Artists extends Component {
       editingId,
       enableSave,
       modalNameValue
-    });
+    }, function(){console.log("callback", this.state.modalOpen)});
   }
 
 
@@ -99,7 +101,7 @@ class Artists extends Component {
       name: this.modalName.value,
     };
     this.state.editingId ? artistsActions.updateArtist(this.state.editingId, artist) :  artistsActions.addArtist(artist);
-    this.toogleModal();
+    this.toggleModal();
   }
 
   removeArtist(id){
@@ -128,7 +130,7 @@ class Artists extends Component {
               <ItemMenuList
                 className="pull-right"
                 id={id} 
-                edit={this.toogleModal.bind(this, "edit", id)}
+                edit={this.toggleModal.bind(this, "edit", id)}
                 delete={this.removeArtist.bind(this,id)}
               />
             </h5>
@@ -143,14 +145,14 @@ class Artists extends Component {
           <div className="card-header">
             <i className="icon-people"/>
             Artists List&nbsp;&nbsp;
-            <i id="addModalButton" className="btn icon-plus font-success" onClick={this.toogleModal.bind(this,"add")}></i>
+            <i id="addModalButton" className="btn icon-plus font-success" onClick={this.toggleModal.bind(this,"add")}></i>
           </div>
           <div className="card-body">
             {mappedList}
           </div>
         </div>
-        <Modal isOpen={modalOpen} toggle={this.toogleModal.bind(this)}>
-          <ModalHeader toggle={this.toogleModal.bind(this)}>{modalTitle}</ModalHeader>
+        <Modal isOpen={modalOpen} toggle={this.toggleModal.bind(this)}>
+          <ModalHeader toggle={this.toggleModal.bind(this)}>{modalTitle}</ModalHeader>
           <ModalBody>
             <div className="col-md-12">
               <label>Name:</label>

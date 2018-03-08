@@ -4,6 +4,7 @@ import {
   Modal, ModalHeader, ModalBody, ModalFooter,
   Label,
   Input,
+  Container, Row, Col
 } from 'reactstrap';
 import ItemMenuList from "../../../components/ItemMenuList";
 import Select from "../../../components/Select";
@@ -31,7 +32,12 @@ class Musics extends Component {
       enableSave: false,
       modalTitle: "",
       modalNameValue: "",
-      modalSelectedArtist : ""
+      modalSelectedArtist : null,
+      selectedOrder: 0,
+      searchInputValue : "",
+      searchedMusics: {},
+      orderedSearchedMusics: {},
+      
     };
   }
   componentWillMount(){
@@ -40,15 +46,25 @@ class Musics extends Component {
     artistsActions.getArtists();
   }
   
-  toogleModal(type, id){
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      ...this.state,
+      searchedMusics : nextProps.musics.list,
+      orderedSearchedMusics: nextProps.musics.list,
+    });
+  }
+
+  toggleModal(type, id){
+    
     let {
       modalOpen, 
       modalTitle, 
       editingId, 
       enableSave,
       modalNameValue,
+      modalSelectedArtist
     } = this.state;
-
+    
     enableSave = false;
     modalNameValue = "";
     
@@ -56,6 +72,7 @@ class Musics extends Component {
       case "add":{
         modalTitle = "New Music";
         editingId = null;
+        modalSelectedArtist = null;
         break;
       }
       case "edit":{
@@ -64,24 +81,60 @@ class Musics extends Component {
         enableSave = true;
         
         modalNameValue = this.props.musics.list[id].name;
+        modalSelectedArtist = this.props.musics.list[id].artist;
         break;
       }
     }
+    
     this.setState({
       ...this.state, 
-      modalOpen: !modalOpen, 
+      modalOpen: modalOpen ? false : true,
       modalTitle,
       editingId,
       enableSave,
-      modalNameValue
+      modalNameValue,
+      modalSelectedArtist,
     });
   }
 
-  handleSelectChange(selectOption){
+  handleSelectChange(selectedOption){
     this.setState({
       ...this.state, 
-      modalSelectedArtist: selectOption, 
-    });
+      modalSelectedArtist: selectedOption, 
+    },
+    this.validateMusic);
+  }
+
+  handleSelectOrder(selectedOption){
+    
+    switch(selectedOption){
+      case 0:{
+        this.setState({
+          ...this.state,
+          orderedSearchedMusics: this.state.searchedMusics,
+          selectedOrder: selectedOption
+        });
+        break;
+      }
+      case 1:{
+        let orderedSearchedMusics = {};
+        const list = this.state.searchedMusics;
+
+        for(const artistId in this.props.artistsList){
+          
+          Object.keys(list).filter((musicId) => list[musicId].artist == artistId)
+          .forEach(musicId => {
+            orderedSearchedMusics[musicId] = list[musicId];
+          });
+        }
+        
+        this.setState({
+          ...this.state,
+          orderedSearchedMusics,
+          selectedOrder: selectedOption
+        });
+      }
+    }    
   }
 
   validateMusic(){
@@ -89,15 +142,19 @@ class Musics extends Component {
     const editingId = this.state.editingId;
 
     const name = this.modalName.value;
-    
     let enable = true;
 
     if(name == undefined || name == "") enable = false;
     
-    for(let id in musics){
-      if(musics[id].name.toLowerCase() == name.toLowerCase() && editingId != id) enable = false;
-    }
+    if(!this.state.modalSelectedArtist) enable = false;
 
+    for(let id in musics){
+      if(
+        musics[id].name.toLowerCase() == name.toLowerCase() 
+        && musics[id].artist == this.state.modalSelectedArtist
+        && editingId != id) enable = false;
+    }
+    
     this.setState({
       ...this.state, 
       enableSave: enable,
@@ -107,37 +164,72 @@ class Musics extends Component {
 
   saveMusic(){
     if(!this.state.enableSave) return;
-
-    const music = {
-      name: this.modalName.value,
-      artist : ""
-    };
-    this.state.editingId ? musicsActions.updateMusic(this.state.editingId, music) :  musicsActions.addMusic(music);
-    this.toogleModal();
+    
+    this.setState({
+      ...this.state,
+      modalOpen : false
+    },
+    function(){
+      const music = {
+        name: this.modalName.value,
+        artist : this.state.modalSelectedArtist
+      };
+      this.state.editingId ? musicsActions.updateMusic(this.state.editingId, music) :  musicsActions.addMusic(music);
+    }.bind(this));//need this approach because it was not closing the modal after saving the new music
   }
 
   removeMusic(id){
     musicsActions.removeMusic(id);
   }
 
-  selected(value){
-    console.log(value);
+  searchMusic(e){
+    const searchValue = e.target.value.toLowerCase();
+    
+    if(searchValue == ""){
+      this.setState({
+          ...this.state,
+          searchInputValue: searchValue,
+          searchedMusics: this.props.musics.list
+        },
+        this.handleSelectOrder.bind(this, this.state.selectedOrder)
+      );
+
+      return;
+    }
+
+    let newList = {};
+   
+    for(const id in this.props.musics.list){
+      
+      const music = this.props.musics.list[id].name.toLowerCase();
+      const artist = this.props.artistsList[this.props.musics.list[id].artist].name.toLowerCase();
+
+      if(music.indexOf(searchValue) !== -1 || artist.indexOf(searchValue) !== -1) newList[id] = this.props.musics.list[id];
+    }
+    
+    this.setState({
+        ...this.state,
+        searchInputValue: searchValue,
+        searchedMusics: newList
+      },
+      this.handleSelectOrder.bind(this, this.state.selectedOrder)
+    );
   }
 
   render() {
     const {
       dispatch,
-      musics,
       artistsList
     } = this.props;
 
-    const list = musics.list;
-
+    const list = this.state.orderedSearchedMusics;
+    
     const {
       enableSave,
       modalOpen,
       modalTitle,
       modalNameValue,
+      searchInputValue
     } = this.state;
     
     const mappedList = Object.keys(list).map((id, i) =>{
@@ -145,11 +237,11 @@ class Musics extends Component {
         <div className="row" key={"row_"+i}>
           <div className="col-md-12">
             <h5>
-              {list[id].name}
+              {list[id].name} - {artistsList[list[id].artist].name}
               <ItemMenuList
                 className="pull-right"
                 id={id} 
-                edit={this.toogleModal.bind(this, "edit", id)}
+                edit={this.toggleModal.bind(this, "edit", id)}
                 delete={this.removeMusic.bind(this,id)}
               />
             </h5>
@@ -169,16 +261,43 @@ class Musics extends Component {
       <div className="animated fadeIn">
         <div className="card">
           <div className="card-header">
-            <i className="icon-music-tone-alt"/>
-            Musics List&nbsp;&nbsp;
-            <i id="addModalButton" className="btn icon-plus font-success" onClick={this.toogleModal.bind(this,"add")}></i>
+            <Row>
+              <Col sm="3">
+                <i className="icon-music-tone-alt"/>
+                &nbsp;&nbsp;Musics List&nbsp;&nbsp;
+                <i id="addModalButton" className="btn icon-plus font-success" onClick={this.toggleModal.bind(this,"add")}/>
+              </Col>
+              <Col sm={{ size: 4, offset: 5}}>
+                <div className="pull-right">
+                  <span>Order by:&nbsp;</span>
+                  <Select
+                    options={[{value: 0, label: "Music"}, {value:1, label: "Artist"}]}
+                    handler={this.handleSelectOrder.bind(this)}
+                    width="200px"
+                    selected={this.state.selectedOrder}
+                    size="sm"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm="12">
+                <Input
+                  key="searchInput"
+                  type="text" 
+                  placeholder="Search here"
+                  onChange={this.searchMusic.bind(this)}
+                  value={searchInputValue}
+                />
+              </Col>
+            </Row>
           </div>
           <div className="card-body">
             {mappedList}
           </div>
         </div>
-        <Modal isOpen={modalOpen} toggle={this.toogleModal.bind(this)}>
-          <ModalHeader toggle={this.toogleModal.bind(this)}>{modalTitle}</ModalHeader>
+        <Modal isOpen={modalOpen} toggle={this.toggleModal.bind(this)}>
+          <ModalHeader toggle={this.toggleModal.bind(this)}>{modalTitle}</ModalHeader>
           <ModalBody>
             <div className="col-md-12">
               <label>Name:</label>
@@ -197,9 +316,9 @@ class Musics extends Component {
               <Select
                 label="Select an Artist"
                 options={mappedArtistsList}
-                handler={this.selected.bind(this)}
-                width="100%"
+                handler={this.handleSelectChange.bind(this)}
                 search
+                selected={this.state.modalSelectedArtist}
                 />
             </div>
           </ModalBody>
