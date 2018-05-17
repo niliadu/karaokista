@@ -24,11 +24,6 @@ export default {
       name: 'Videos',
       url: '/admin/videos',
       icon: 'icon-camrecorder'
-    },
-    {
-      name: 'Playlist',
-      url: '/admin/playlist',
-      icon: 'icon-playlist'
     }
   ]
 };

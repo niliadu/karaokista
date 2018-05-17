@@ -4,5 +4,12 @@ import global from "./global";
 import venues from "./venues";
 import artists from "./artists";
 import musics from "./musics";
+import setlist from "./setlist";
 
-export default combineReducers({global, venues, artists, musics});
+export default combineReducers({
+    global, 
+    venues, 
+    artists,
+    musics, 
+    setlist
+});

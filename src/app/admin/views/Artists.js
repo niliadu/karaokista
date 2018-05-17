@@ -49,7 +49,6 @@ class Artists extends Component {
       case "add":{
         modalTitle = "New Artist";
         editingId = null;
-        console.log("add",modalOpen);
         break;
       }
       case "edit":{
@@ -61,7 +60,7 @@ class Artists extends Component {
         break;
       }
     }
-    console.log("toggle",modalOpen);
+    
     this.setState({
       ...this.state, 
       modalOpen: !modalOpen, 
@@ -69,7 +68,7 @@ class Artists extends Component {
       editingId,
       enableSave,
       modalNameValue
-    }, function(){console.log("callback", this.state.modalOpen)});
+    });
   }
 
 
@@ -170,7 +169,7 @@ class Artists extends Component {
           <ModalFooter>
             <Button color="success" className={(enableSave ? "" : "disabled")+" pull-right"} onClick={this.saveArtist.bind(this)}>Save</Button>
           </ModalFooter>
-      </Modal>
+        </Modal>
       </div>
     )
   }
