@@ -126,3 +126,25 @@ fire.database().ref('/setlist/current').on('child_added', async(snap) => {
         type: "ADDED_CURRENT_SONGS",
     });            
 });
+
+fire.database().ref('/setlist/current').on('child_changed', async(snap) => {
+    if(store.getState().setlist.firstLoad) return
+    
+    await setlist.getCurrentSongs();
+    
+    store.dispatch({
+        type: "UPDATED_CURRENT_SONG",
+        value: snap.val()
+    });            
+});
+
+fire.database().ref('/setlist/current').on('child_removed', async(snap) => {
+    if(store.getState().musics.firstLoad) return
+
+    await setlist.getCurrentSongs();
+
+    store.dispatch({
+        type: "REMOVED_CURRENT_SONG",
+        value: snap.val()
+    });            
+});

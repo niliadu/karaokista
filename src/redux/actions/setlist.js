@@ -19,10 +19,16 @@ export function addToCurrent(songs){
     fire.database().ref('/setlist/current').update(newSongs);
 }
 
-// export function updateMusic(id, music){
-//     fire.database().ref('/musics').child(id).update(music);
-// }
+export function moveCurrent(songs){
+    fire.database().ref('/setlist/current').set(songs).then(async()=>{
+        await getCurrentSongs();
+    });
+}
 
-// export function removeMusic(id){
-//     fire.database().ref('/musics').child(id).remove();
-// }
+export function updateCurrent(id, song){
+    fire.database().ref('/setlist/current').child(id).update(song);
+}
+
+export function removeCurrent(id){
+    fire.database().ref('/setlist/current').child(id).remove();
+}

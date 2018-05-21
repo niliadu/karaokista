@@ -12,7 +12,8 @@ export default class ItemMenuList extends Component {
     this.toggle = this.toggle.bind(this);
     this.state = {
       popoverOpen: false,
-      promptOpen: false
+      promptOpen: false,
+      canmove: !(props.move == null || props.move == undefined)
     };
   }
 
@@ -40,9 +41,16 @@ export default class ItemMenuList extends Component {
     this.togglePrompt();
   }
 
+  _move(up){
+    if(!this.state.canmove) return;
+    this.props.move(up);
+  }
+
   render() {
     return (
       <div className={this.props.className}>
+        { this.state.canmove && <i className="icon-arrow-up btn" onClick={this._move.bind(this, true)}/>}
+        { this.state.canmove &&  <i className="icon-arrow-down btn" onClick={this._move.bind(this, false)}/>}
         <i className="icon-options btn btn-lg" id={this.props.id} onClick={this.toggle}/>
         <Popover placement="bottom" isOpen={this.state.popoverOpen} target={this.props.id} toggle={this.toggle}>
           <PopoverBody>
