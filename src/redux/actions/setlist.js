@@ -32,3 +32,12 @@ export function updateCurrent(id, song){
 export function removeCurrent(id){
     fire.database().ref('/setlist/current').child(id).remove();
 }
+
+export function getPendingSongs(){
+    fire.database().ref('/setlist/pending').once('value', snap => {
+        store.dispatch({
+            type: "PENDING_SONGS_RECEVIED",
+            value: snap.val()
+        });
+    });
+}

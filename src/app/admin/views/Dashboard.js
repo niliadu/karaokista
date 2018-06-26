@@ -67,6 +67,7 @@ class Dashboard extends Component {
         if(!open){
           const song = this.props.currentSongsList[id];
           this.setState({
+            ...this.state,
             modalEditCurrentOpen: !open,
             editCurrentId: id,
             modalEditCurrentName: song.name,
@@ -75,6 +76,7 @@ class Dashboard extends Component {
           });
         }else{
           this.setState({
+            ...this.state,
             modalEditCurrentOpen: !open,
           });
         }
@@ -82,12 +84,14 @@ class Dashboard extends Component {
       }
       case "prompt":{
         this.setState({
+          ...this.state,
           promptOpen: !this.state.promptOpen
         });
         break;
       }
       default:{
         this.setState({
+          ...this.state,
           modalOpen: !this.state.modalOpen,
           selectedSongs:[]
         });

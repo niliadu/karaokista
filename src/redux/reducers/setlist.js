@@ -41,6 +41,22 @@ export default function setlistReducer(state={
             });
             break;
         }
+        case "PENDING_SONGS_RECEVIED":{
+            state = {
+                ...state,
+                firstLoad: false,
+                current: action.value ? action.value : {},
+            };
+            break;
+        }
+        case "ADDED_PENDING_SONGS":{
+            if(store.getState().global.currentView != "dashboard") break;
+
+            toast.success('Songs were added to the current setlist!', {
+                position: toast.POSITION.BOTTOM_RIGHT
+            });
+            break;
+        }
     }
     return state;
 }

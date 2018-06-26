@@ -3,7 +3,7 @@ import store from "../store";
 import * as venues from "./venues";
 import * as artists from "./artists";
 import * as musics from "./musics";
-import * as setlist from "./setList";
+import * as setlist from "./setlist";
 
 //get changes in the root of 
 fire.database().ref('/global/').on('child_changed', snap => {
@@ -139,12 +139,22 @@ fire.database().ref('/setlist/current').on('child_changed', async(snap) => {
 });
 
 fire.database().ref('/setlist/current').on('child_removed', async(snap) => {
-    if(store.getState().musics.firstLoad) return
+    if(store.getState().setlist.firstLoad) return
 
     await setlist.getCurrentSongs();
 
     store.dispatch({
         type: "REMOVED_CURRENT_SONG",
         value: snap.val()
+    });            
+});
+
+fire.database().ref('/setlist/pending').on('child_added', async(snap) => {
+    if(store.getState().setlist.firstLoad) return
+    
+    await setlist.getPendingSongs();
+    
+    store.dispatch({
+        type: "ADDED_PENDING_SONGS",
     });            
 });

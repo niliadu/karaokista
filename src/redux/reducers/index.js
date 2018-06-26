@@ -5,11 +5,13 @@ import venues from "./venues";
 import artists from "./artists";
 import musics from "./musics";
 import setlist from "./setlist";
+import frontSongsList from "./frontSongsList";
 
 export default combineReducers({
     global, 
     venues, 
     artists,
     musics, 
-    setlist
+    setlist,
+    frontSongsList
 });
