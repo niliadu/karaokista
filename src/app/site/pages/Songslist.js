@@ -3,10 +3,10 @@ import { ToastContainer } from "react-toastify";
 import {
   Button,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Label,
   Input,
   Container, Row, Col
 } from 'reactstrap';
+import { Link } from "react-router-dom";
 import Select from "../../../components/Select";
 
 import store from "../../../redux/store";
@@ -20,7 +20,8 @@ import * as songsListActions from "../../../redux/actions/frontSongsList";
 @connect((store) => {
   return {
     songs: store.musics,
-    artistsList: store.artists.list
+    artistsList: store.artists.list,
+    liveIsON: store.global.liveIsON
   };
 })
 
@@ -137,39 +138,43 @@ class Songslist extends Component {
     );
   }
 
-  validateSingerName(){
+  validateSingerName() {
     const name = this.modalSingerName.value;
     let enable = true;
 
-    if(name == undefined || name == "") enable = false;
-    
+    if (name == undefined || name == "") enable = false;
+
     this.setState({
-      ...this.state, 
+      ...this.state,
       enableSave: enable,
-      modalSingerNameValue : name,
+      modalSingerNameValue: name,
     });
   }
 
-  addSongToPendingSetlist(){
+  addSongToPendingSetlist() {
     const {
       songToAddInSetlist,
       modalSingerNameValue,
       enableSave
     } = this.state;
 
-    if(!enableSave) return;
+    if (!enableSave) return;
 
-    songsListActions.addArtist({...songToAddInSetlist, singer: modalSingerNameValue});
+    songsListActions.addArtist({ ...songToAddInSetlist, singer: modalSingerNameValue });
     store.dispatch({
-        type: "USER_ADDED_SONG"
+      type: "USER_ADDED_SONG"
     });
     this.toggleModal();
   }
 
   render() {
     const {
-      artistsList
+      artistsList,
+      liveIsON
     } = this.props;
+
+    const liveButtonColor = liveIsON ? 'success' : '';
+    const onOff = liveIsON ? "ON" : "OFF";
 
     const list = this.state.orderedSearchedSongs;
 
@@ -190,18 +195,32 @@ class Songslist extends Component {
             </h6>
           </div>
           <Col md='2' className='pull-right'>
-            <i id={'add_song_' + i} className="btn icon-plus font-success pull-right" onClick={this.toggleModal.bind(this, list[id])} />
+            {this.props.liveIsON && <i
+              id={'add_song_' + i}
+              className="btn icon-plus font-success pull-right"
+              onClick={this.toggleModal.bind(this,
+                {
+                  name: list[id].name,
+                  artistName: artistsList[list[id].artist].name
+                }
+              )}
+            />}
           </Col>
         </div>
       );
     });
-    
-    const modalSelectedSong = (songToAddInSetlist) ? songToAddInSetlist.name + " - " + artistsList[songToAddInSetlist.artist].name : "";
+
+    const modalSelectedSong = (songToAddInSetlist) ? songToAddInSetlist.name + " - " + songToAddInSetlist.artistName : "";
 
     return (
       <Container>
         <br />
+          <br />
         <div className="animated fadeIn">
+          <Link to="/setlist">GO TO SETLIST</Link>
+          <Button color={liveButtonColor} className="pull-right">Live Stream {onOff}</Button>
+          <br />
+          <br />
           <div className="card">
             <div className="card-header">
               <Row>
@@ -261,7 +280,7 @@ class Songslist extends Component {
             </ModalFooter>
           </Modal>
         </div>
-        <ToastContainer/>
+        <ToastContainer />
       </Container>
     )
   }

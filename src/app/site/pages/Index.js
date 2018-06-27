@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-
+import { Redirect } from "react-router-dom";
 
 class Index extends Component {
   render() {
     return (
-          <h1>Index do site</h1>
+          <Redirect to="/songslist"/>
     );
   }
 }

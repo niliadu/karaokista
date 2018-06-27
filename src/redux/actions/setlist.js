@@ -41,3 +41,12 @@ export function getPendingSongs(){
         });
     });
 }
+
+export function fromPendingToCurrent(id, song){
+    removePending(id);
+    addToCurrent(song);
+}
+
+export function removePending(id){
+    fire.database().ref('/setlist/pending').child(id).remove();
+}

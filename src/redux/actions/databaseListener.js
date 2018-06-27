@@ -118,7 +118,7 @@ fire.database().ref('/musics/').on('child_changed', async(snap) => {
 });
 
 fire.database().ref('/setlist/current').on('child_added', async(snap) => {
-    if(store.getState().setlist.firstLoad) return
+    if(store.getState().setlist.currentFirstLoad) return
     
     await setlist.getCurrentSongs();
     
@@ -128,7 +128,7 @@ fire.database().ref('/setlist/current').on('child_added', async(snap) => {
 });
 
 fire.database().ref('/setlist/current').on('child_changed', async(snap) => {
-    if(store.getState().setlist.firstLoad) return
+    if(store.getState().setlist.currentFirstLoad) return
     
     await setlist.getCurrentSongs();
     
@@ -139,7 +139,7 @@ fire.database().ref('/setlist/current').on('child_changed', async(snap) => {
 });
 
 fire.database().ref('/setlist/current').on('child_removed', async(snap) => {
-    if(store.getState().setlist.firstLoad) return
+    if(store.getState().setlist.currentFirstLoad) return
 
     await setlist.getCurrentSongs();
 
@@ -150,11 +150,23 @@ fire.database().ref('/setlist/current').on('child_removed', async(snap) => {
 });
 
 fire.database().ref('/setlist/pending').on('child_added', async(snap) => {
-    if(store.getState().setlist.firstLoad) return
+    if(store.getState().setlist.pendingFirstLoad) return
     
     await setlist.getPendingSongs();
     
     store.dispatch({
         type: "ADDED_PENDING_SONGS",
     });            
+});
+
+fire.database().ref('/setlist/pending').on('child_removed', async(snap) => {
+    if(store.getState().setlist.pendingFirstLoad) return
+
+    await setlist.getPendingSongs();
+
+    //try to see a away to notice if this is a move or a deletion
+    // store.dispatch({
+    //     type: "REMOVED_CURRENT_SONG",
+    //     value: snap.val()
+    // });            
 });

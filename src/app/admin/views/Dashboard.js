@@ -22,12 +22,13 @@ import * as setlistActions from "../../../redux/actions/setlist";
     liveIsON: store.global.liveIsON,
     songsList: store.musics.list,
     artistsList: store.artists.list,
-    currentSongsList: store.setlist.current
+    currentSongsList: store.setlist.current,
+    pendingSongsList: store.setlist.pending
   }
 })
 
 class Dashboard extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
       modalOpen: false,
@@ -35,9 +36,10 @@ class Dashboard extends Component {
       searchInputValue: "",
       enableSave: false,
       selectedSongs: [],
-      selectedSongsSinger:{},
+      selectedSongsSinger: {},
       promptOpen: false,
-      editCurrentId:"",      
+      promptLiveOpen: false,
+      editCurrentId: "",
       modalEditCurrentOpen: false,
       modalEditCurrentName: "",
       modalEditCurrentArtist: "",
@@ -45,26 +47,27 @@ class Dashboard extends Component {
     };
   }
 
-  componentWillMount(){
+  componentWillMount() {
     globalActions.setCurrentAdminView("dashboard");
     dashboardActions.getGlobals();
     musicsActions.getMusics();
     artistsActions.getArtists();
     setlistActions.getCurrentSongs();
+    setlistActions.getPendingSongs();
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       ...this.state,
-      searchedSongs : nextProps.songsList
+      searchedSongs: nextProps.songsList
     });
   }
 
-  toggleModal(type,id){
-    switch(type){
-      case "editCurrent":{
+  toggleModal(type, id) {
+    switch (type) {
+      case "editCurrent": {
         const open = this.state.modalEditCurrentOpen;
-        if(!open){
+        if (!open) {
           const song = this.props.currentSongsList[id];
           this.setState({
             ...this.state,
@@ -74,7 +77,7 @@ class Dashboard extends Component {
             modalEditCurrentArtist: song.artistName,
             modalEditCurrentSinger: song.singer
           });
-        }else{
+        } else {
           this.setState({
             ...this.state,
             modalEditCurrentOpen: !open,
@@ -82,40 +85,51 @@ class Dashboard extends Component {
         }
         break;
       }
-      case "prompt":{
+      case "prompt": {
         this.setState({
           ...this.state,
           promptOpen: !this.state.promptOpen
         });
         break;
       }
-      default:{
+      case "promptLive": {
+        this.setState({
+          ...this.state,
+          promptLiveOpen: !this.state.promptLiveOpen
+        });
+        break;
+      }
+      default: {
         this.setState({
           ...this.state,
           modalOpen: !this.state.modalOpen,
-          selectedSongs:[]
+          selectedSongs: []
         });
       }
     }
   }
 
-  toggleLive(){
-    dashboardActions.toggleLive();
+  toggleLive() {
+    if(this.props.liveIsON){
+      this.toggleModal('promptLive');
+    }else{
+      dashboardActions.toggleLive();
+    }
   }
 
-  searchSong(e){
+  searchSong(e) {
     const searchValue = e.target.value.toLowerCase();
     let newList = {};
 
-    if(searchValue == ""){
+    if (searchValue == "") {
       newList = this.props.songsList;
-    }else{
-      for(const id in this.props.songsList){
-        
+    } else {
+      for (const id in this.props.songsList) {
+
         const song = this.props.songsList[id].name.toLowerCase();
         const artist = this.props.artistsList[this.props.songsList[id].artist].name.toLowerCase();
 
-        if(song.indexOf(searchValue) !== -1 || artist.indexOf(searchValue) !== -1) newList[id] = this.props.songsList[id];
+        if (song.indexOf(searchValue) !== -1 || artist.indexOf(searchValue) !== -1) newList[id] = this.props.songsList[id];
       }
     }
 
@@ -124,32 +138,32 @@ class Dashboard extends Component {
       searchInputValue: searchValue,
       searchedSongs: newList,
     },
-    this.checkEnableSave);
+      this.checkEnableSave);
   }
 
-  toggleSelecteSong(id){
+  toggleSelecteSong(id) {
     let { selectedSongs, selectedSongsSinger } = this.state;
     const index = selectedSongs.indexOf(id);
-    if(index == -1){
+    if (index == -1) {
       selectedSongs.push(id);
       selectedSongsSinger[id] = "";
-    }else{
-     selectedSongs.splice(index,1);
-     delete selectedSongsSinger[id];
+    } else {
+      selectedSongs.splice(index, 1);
+      delete selectedSongsSinger[id];
     }
-    
+
     this.setState({
       ...this.state,
       selectedSongs,
       selectedSongsSinger
     },
-    this.checkEnableSave);
+      this.checkEnableSave);
   }
 
-  checkEnableSave(){
+  checkEnableSave() {
     const { searchInputValue, selectedSongs } = this.state;
     const enableSave = (searchInputValue != "" || selectedSongs.length > 0);
-    
+
     this.setState({
       ...this.state,
       enableSave
@@ -157,24 +171,24 @@ class Dashboard extends Component {
   }
 
 
-  selectedSongsSingerChange(id,e){
+  selectedSongsSingerChange(id, e) {
     let selectedSongsSinger = this.state.selectedSongsSinger;
     selectedSongsSinger[id] = e.target.value
-    
+
     this.setState({
       ...this.state,
       selectedSongsSinger
     });
   }
 
-  async addToCurrentSongs(promptAnswer){
+  async addToCurrentSongs(promptAnswer) {
     const { artistsList, songsList, currentSongsList } = this.props;
     const { enableSave, selectedSongs, selectedSongsSinger } = this.state;
-    console.log(selectedSongsSinger)
-    let  mappedselectedSongs = [];
-    if(!enableSave) return;
     
-    if(promptAnswer == true){// needs to be this way
+    let mappedselectedSongs = [];
+    if (!enableSave) return;
+
+    if (promptAnswer == true) {// needs to be this way
 
       // this part get the response of the prompt modal that asks if the user wants to add the
       // search text as a current song
@@ -183,48 +197,48 @@ class Dashboard extends Component {
         order: Object.keys(currentSongsList).length,
         singer: ""
       });
-    }else if(selectedSongs.length == 0){
+    } else if (selectedSongs.length == 0) {
       //calls the prompt that asks if the user wants to add the
       // search text as a current song
       this.toggleModal("prompt");
-      
+
       return;//exits this function instance to prevent saving
-    }else{
-        mappedselectedSongs = selectedSongs.map((id, i) => {
+    } else {
+      mappedselectedSongs = selectedSongs.map((id, i) => {
         const song = songsList[id];
         return {
           name: song.name,
           artistName: artistsList[song.artist].name,
-          singer: selectedSongsSinger[id],          
+          singer: selectedSongsSinger[id],
           order: Object.keys(currentSongsList).length + i
         };
       });
     }
-    
+
     await this.toggleModal();// was givin a error when treated async
     setlistActions.addToCurrent(mappedselectedSongs);
-    
+
   }
 
-  validateEdit(e){
+  validateEdit(e) {
     const name = e.target.name;
     const value = e.target.value;
-    
+
     let enable = (name == "modalEditCurrentArtist") ? this.state.enableSave : true;
 
-    if(name != "modalEditCurrentArtist" && (value == undefined || value == "")) enable = false;
-    
+    if (name != "modalEditCurrentArtist" && (value == undefined || value == "")) enable = false;
+
     this.setState({
-      ...this.state, 
+      ...this.state,
       enableSave: enable,
       [name]: value
     });
   }
 
-  async saveEditCurrentSong(){
-    const id =this.state.editCurrentId;
+  async saveEditCurrentSong() {
+    const id = this.state.editCurrentId;
     let song = this.props.currentSongsList[id];
-    
+
     song.name = this.state.modalEditCurrentName;
     song.artistName = this.state.modalEditCurrentArtist;
     song.singer = this.state.modalEditCurrentSinger;
@@ -233,68 +247,82 @@ class Dashboard extends Component {
     this.toggleModal("editCurrent");
   }
 
-  async removeCurrentSong(id){
+  async removeCurrentSong(id) {
     await setlistActions.removeCurrent(id);
   }
 
-  moveCurrentSong(id,up){
+  moveCurrentSong(id, up) {
     let songs = this.props.currentSongsList;
     let oldPos = songs[id].order;
-    let newPos = 0;
-    
-    if(up && (oldPos - 1) >= 0) newPos = oldPos - 1;
-    else if(!up && (oldPos + 1) < Object.keys(this.props.currentSongsList).length)  newPos = oldPos + 1;
-    
-    for(let i in songs){
-      if(songs[i].order == oldPos) songs[i].order = newPos;
-      else if(songs[i].order == newPos) songs[i].order = oldPos;
+    let newPos = oldPos;
+
+    if (up && (oldPos - 1) >= 0) newPos = oldPos - 1;
+    else if (!up && (oldPos + 1) < Object.keys(this.props.currentSongsList).length) newPos = oldPos + 1;
+
+    for (let i in songs) {
+      if (songs[i].order == oldPos) songs[i].order = newPos;
+      else if (songs[i].order == newPos) songs[i].order = oldPos;
     }
-    
     setlistActions.moveCurrent(songs);
+    
+  }
+
+  fromPendingToCurrent(id){
+    const song = [{
+      ...this.props.pendingSongsList[id],
+      order: Object.keys(this.props.currentSongsList).length + 1
+    }];
+
+    setlistActions.fromPendingToCurrent(id,song);
+  }
+
+  removePendingSong(id) {
+    setlistActions.removePending(id);
   }
 
   render() {
     const {
       liveIsON,
-      artistsList, 
+      artistsList,
       songsList,
-      currentSongsList
+      currentSongsList,
+      pendingSongsList
     } = this.props;
-    
+
     const {
       modalOpen,
-      modalEditCurrentOpen, 
+      modalEditCurrentOpen,
       searchInputValue,
-      selectedSongsSinger, 
+      selectedSongsSinger,
       searchedSongs,
       enableSave,
       selectedSongs,
       modalEditCurrentName,
       modalEditCurrentArtist,
       modalEditCurrentSinger
-    } =  this.state;
+    } = this.state;
 
-    const liveButtonColor = liveIsON ? 'success': '' ;
+    const liveButtonColor = liveIsON ? 'success' : '';
     const onOff = liveIsON ? "ON" : "OFF";
-    
-    const mappedSelectedSongsListAdd = Object.keys(songsList).filter(id => selectedSongs.indexOf(id) > -1).map((id, i) =>{
+
+    const mappedSelectedSongsListAdd = Object.keys(songsList).filter(id => selectedSongs.indexOf(id) > -1).map((id, i) => {
       return (
-        <div key={"add_modal_row_selected_"+i} style={{marginBottom:'0.5em'}}>
+        <div key={"add_modal_row_selected_" + i} style={{ marginBottom: '0.5em' }}>
           <Row>
-            <Col size="12" onClick={this.toggleSelecteSong.bind(this,id)}>
+            <Col size="12" onClick={this.toggleSelecteSong.bind(this, id)}>
               <h6>
-                <i className="icon-check" style={{visibility: "visible"}}/>
+                <i className="icon-check" style={{ visibility: "visible" }} />
                 &nbsp;&nbsp;
                 {songsList[id].name} - {artistsList[songsList[id].artist].name}
-                
+
               </h6>
             </Col>
           </Row>
           <Row >
             <Col size="12">
               <Input
-                key={"singer_name_"+i}
-                type="text" 
+                key={"singer_name_" + i}
+                type="text"
                 placeholder="Singer name"
                 onChange={this.selectedSongsSingerChange.bind(this, id)}
                 value={selectedSongsSinger[id]}
@@ -305,12 +333,12 @@ class Dashboard extends Component {
       );
     });
 
-    const mappedSongListAdd = Object.keys(searchedSongs).filter(id => selectedSongs.indexOf(id) === -1).map((id, i) =>{
+    const mappedSongListAdd = Object.keys(searchedSongs).filter(id => selectedSongs.indexOf(id) === -1).map((id, i) => {
       return (
-        <Row key={"add_modal_row_"+i}>
-          <Col size="12" onClick={this.toggleSelecteSong.bind(this,id)}>
+        <Row key={"add_modal_row_" + i}>
+          <Col size="12" onClick={this.toggleSelecteSong.bind(this, id)}>
             <h5>
-              <i className="icon-check" style={{visibility: "hidden"}}/>
+              <i className="icon-check" style={{ visibility: "hidden" }} />
               &nbsp;&nbsp;
               {searchedSongs[id].name} - {artistsList[searchedSongs[id].artist].name}
             </h5>
@@ -323,18 +351,36 @@ class Dashboard extends Component {
     let orderMapCurrentSongs = [];
     Object.keys(currentSongsList).forEach(id => orderMapCurrentSongs[currentSongsList[id].order] = id);
 
-    const mappedCurrentSongsList = orderMapCurrentSongs.map((id, i) =>{
+    const mappedCurrentSongsList = orderMapCurrentSongs.map((id, i) => {
       return (
-        <Row key={"current_row_"+i}>
+        <Row key={"current_row_" + i}>
           <Col size="12">
             <h6>
-              {currentSongsList[id].singer + " - \"" +currentSongsList[id].name + "\" by "} <em>{currentSongsList[id].artistName}</em>
+              {currentSongsList[id].singer + " - \"" + currentSongsList[id].name + "\" by "} <em>{currentSongsList[id].artistName}</em>
               <ItemMenuList
                 className="pull-right"
-                id={id} 
+                id={id}
                 edit={this.toggleModal.bind(this, "editCurrent", id)}
-                delete={this.removeCurrentSong.bind(this,id)}
+                delete={this.removeCurrentSong.bind(this, id)}
                 move={this.moveCurrentSong.bind(this, id)}
+              />
+            </h6>
+          </Col>
+        </Row>
+      );
+    });
+
+    const mappedPendingSongsList = Object.keys(pendingSongsList).map((id, i) => {
+      return (
+        <Row key={"current_row_" + i}>
+          <Col size="12">
+            <h6>
+              {pendingSongsList[id].singer + " - \"" + pendingSongsList[id].name + "\" by "} <em>{pendingSongsList[id].artistName}</em>
+              <ItemMenuList
+                className="pull-right"
+                id={id}
+                accept={this.fromPendingToCurrent.bind(this,id)}
+                delete={this.removePendingSong.bind(this, id)}
               />
             </h6>
           </Col>
@@ -344,14 +390,14 @@ class Dashboard extends Component {
 
     return (
       <div className="animated fadeIn">
-        <Button color={liveButtonColor} onClick={this.toggleLive}>Live Stream {onOff}</Button>
-        <br/>
-        <br/>
+        <Button color={liveButtonColor} onClick={this.toggleLive.bind(this)}>Live Stream {onOff}</Button>
+        <br />
+        <br />
         <div className="card">
           <div className="card-header">
-            <i className="icon-playlist"/>
+            <i className="icon-playlist" />
             Current Songs&nbsp;&nbsp;
-            <i id="addSongModalButton" className="btn icon-plus font-success" onClick={this.toggleModal.bind(this,"add")}></i>
+            {liveIsON && <i id="addSongModalButton" className="btn icon-plus font-success" onClick={this.toggleModal.bind(this, "add")}></i>}
           </div>
           <div className="card-body">
             {mappedCurrentSongsList}
@@ -359,41 +405,41 @@ class Dashboard extends Component {
         </div>
         <div className="card">
           <div className="card-header">
-            <i className="icon-playlist"/>
+            <i className="icon-playlist" />
             Pending&nbsp;&nbsp;
           </div>
           <div className="card-body">
-            ////
+            {mappedPendingSongsList}
           </div>
         </div>
         <Modal
           isOpen={modalOpen}
           toggle={this.toggleModal.bind(this)}
-          style={{maxHeight:"100vh"}}
+          style={{ maxHeight: "100vh" }}
         >
           <ModalHeader toggle={this.toggleModal.bind(this)}>Add Song to playlist</ModalHeader>
-          <ModalBody style={{maxHeight:"80vh"}}>
-          <Row>
+          <ModalBody style={{ maxHeight: "80vh" }}>
+            <Row>
               <Col sm="12">
                 <Input
                   key="searchInput"
-                  type="text" 
+                  type="text"
                   placeholder="Search here"
                   onChange={this.searchSong.bind(this)}
                   value={searchInputValue}
                 />
               </Col>
             </Row>
-            <br/>
+            <br />
             <Row>
-              <Col sm="12" style={{cursor: 'pointer'}}>
+              <Col sm="12" style={{ cursor: 'pointer' }}>
                 {mappedSelectedSongsListAdd}
               </Col>
             </Row>
-            { mappedSelectedSongsListAdd.length > 0 &&
+            {mappedSelectedSongsListAdd.length > 0 &&
               <Row>
                 <Col sm="12">
-                  <hr/>
+                  <hr />
                 </Col>
               </Row>
             }
@@ -401,7 +447,7 @@ class Dashboard extends Component {
               <Col sm="12" style={
                 {
                   height: 'auto',
-                  maxHeight:"60vh",
+                  maxHeight: "60vh",
                   overflowY: 'scroll',
                   cursor: 'pointer'
                 }
@@ -412,32 +458,39 @@ class Dashboard extends Component {
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" className={(enableSave ? "" : "disabled")+" pull-right"} onClick={this.addToCurrentSongs.bind(this)}>Save</Button>
+            <Button color="success" className={(enableSave ? "" : "disabled") + " pull-right"} onClick={this.addToCurrentSongs.bind(this)}>Save</Button>
           </ModalFooter>
         </Modal>
-        <PromptModal 
-          isOpen={this.state.promptOpen} 
+        <PromptModal
+          isOpen={this.state.promptOpen}
           toggle={this.toggleModal.bind(this, "prompt")}
           isConfirm={true}
-          confirmAction={this.addToCurrentSongs.bind(this, true)}       
-          title={"Are you sure that you want to add '"+ this.state.searchInputValue +"' as a song?"}
+          confirmAction={this.addToCurrentSongs.bind(this, true)}
+          title={"Are you sure that you want to add '" + this.state.searchInputValue + "' as a song?"}
+        />
+        <PromptModal
+          isOpen={this.state.promptLiveOpen}
+          toggle={this.toggleModal.bind(this, "promptLive")}
+          isConfirm={true}
+          confirmAction={dashboardActions.toggleLive.bind(this, true)}
+          title={"This will delete all songs! Do you wish to turn it off?"}
         />
 
         <Modal
           isOpen={modalEditCurrentOpen}
           toggle={this.toggleModal.bind(this, "editCurrent")}
-          style={{maxHeight:"100vh"}}
+          style={{ maxHeight: "100vh" }}
         >
           <ModalHeader toggle={this.toggleModal.bind(this, "editCurrent")}>Edit Current Song</ModalHeader>
-          <ModalBody style={{maxHeight:"80vh"}}>
-          <Row>
-          <div className="col-md-12">
-            </div>
+          <ModalBody style={{ maxHeight: "80vh" }}>
+            <Row>
+              <div className="col-md-12">
+              </div>
               <Col sm="12">
                 <label>Song: </label>
                 <Input
                   name="modalEditCurrentName"
-                  type="text" 
+                  type="text"
                   placeholder="Song"
                   onChange={this.validateEdit.bind(this)}
                   value={modalEditCurrentName}
@@ -447,7 +500,7 @@ class Dashboard extends Component {
                 <label>Artist: </label>
                 <Input
                   name="modalEditCurrentArtist"
-                  type="text" 
+                  type="text"
                   placeholder="Artist"
                   onChange={this.validateEdit.bind(this)}
                   value={modalEditCurrentArtist}
@@ -457,7 +510,7 @@ class Dashboard extends Component {
                 <label>Singer: </label>
                 <Input
                   name="modalEditCurrentSinger"
-                  type="text" 
+                  type="text"
                   placeholder="Singer Name"
                   onChange={this.validateEdit.bind(this)}
                   value={modalEditCurrentSinger}
@@ -466,7 +519,7 @@ class Dashboard extends Component {
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" className={(enableSave ? "" : "disabled")+" pull-right"} onClick={this.saveEditCurrentSong.bind(this)}>Save</Button>
+            <Button color="success" className={(enableSave ? "" : "disabled") + " pull-right"} onClick={this.saveEditCurrentSong.bind(this)}>Save</Button>
           </ModalFooter>
         </Modal>
       </div>

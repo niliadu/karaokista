@@ -13,7 +13,10 @@ export default class ItemMenuList extends Component {
     this.state = {
       popoverOpen: false,
       promptOpen: false,
-      canmove: !(props.move == null || props.move == undefined)
+      canmove: !(props.move == null || props.move == undefined),
+      canaccept: !(props.accept == null || props.accept == undefined),
+      canedit: !(props.edit == null || props.edit == undefined),
+      candelete: !(props.delete == null || props.delete == undefined)
     };
   }
 
@@ -31,13 +34,19 @@ export default class ItemMenuList extends Component {
 
   _edit(){
     this.toggle();
-    if(this.props.edit == null || this.props.edit == undefined) return;
+    if(!this.state.canedit) return;
     this.props.edit();
+  }
+
+  _accept(){
+    this.toggle();
+    if(!this.state.canaccept) return;
+    this.props.accept();
   }
 
   _delete(){
     this.toggle();
-    if(this.props.delete == null || this.props.delete == undefined) return;
+    if(!this.state.candelete) return;
     this.togglePrompt();
   }
 
@@ -54,8 +63,9 @@ export default class ItemMenuList extends Component {
         <i className="icon-options btn btn-lg" id={this.props.id} onClick={this.toggle}/>
         <Popover placement="bottom" isOpen={this.state.popoverOpen} target={this.props.id} toggle={this.toggle}>
           <PopoverBody>
-            <span className="col-sm-12 btn btn-sm" onClick={this._edit.bind(this)}>Edit</span>
-            <span className="col-sm-12 btn btn-sm" onClick={this._delete.bind(this)}>Delete</span>
+            {this.state.canedit && <span className="col-sm-12 btn btn-sm" onClick={this._edit.bind(this)}>Edit</span>}
+            {this.state.canaccept && <span className="col-sm-12 btn btn-sm" onClick={this._accept.bind(this)}>Accept</span>}
+            {this.state.candelete && <span className="col-sm-12 btn btn-sm" onClick={this._delete.bind(this)}>Delete</span>}
           </PopoverBody>
         </Popover>
         <PromptModal 

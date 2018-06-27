@@ -9,14 +9,14 @@ export default class PromptModal extends Component {
     super(props);
   }
 
-  _cancel(){
-    this.props.toggle();    
+  async _cancel(){
+    await this.props.toggle();    
     if(this.props.cancelAction == null || this.props.cancelAction == undefined) return;
     this.props.cancelAction();
   }
 
-  _confirm(){
-    this.props.toggle();
+  async _confirm(){
+    await this.props.toggle();
     if(this.props.confirmAction == null || this.props.confirmAction == undefined) return;
     this.props.confirmAction();
   }
