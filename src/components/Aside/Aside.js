@@ -5,7 +5,7 @@ class Aside extends Component {
   render() {
     return (
       <aside className="aside-menu">
-        {/*Aside Menu*/}
+        <h6>teste</h6>
       </aside>
     )
   }

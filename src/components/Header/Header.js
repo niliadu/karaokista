@@ -1,10 +1,12 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Nav,
   NavItem,
   NavbarToggler,
   NavbarBrand,
 } from 'reactstrap';
+
+import * as loginActions from "../../redux/actions/login"
 
 class Header extends Component {
 
@@ -23,9 +25,12 @@ class Header extends Component {
     document.body.classList.toggle('sidebar-mobile-show');
   }
 
-  asideToggle(e) {
-    e.preventDefault();
-    document.body.classList.toggle('aside-menu-hidden');
+  // asideToggle(e) {
+  //   e.preventDefault();
+  //   document.body.classList.toggle('aside-menu-hidden');
+  // }
+  logout() {
+    loginActions.logout();
   }
 
   render() {
@@ -38,8 +43,11 @@ class Header extends Component {
         <NavbarToggler className="d-md-down-none mr-auto" onClick={this.sidebarToggle}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
-        <NavbarToggler className="d-md-down-none" onClick={this.asideToggle}>
+        {/* <NavbarToggler className="d-md-down-none" onClick={this.asideToggle}>
           <span className="navbar-toggler-icon"></span>
+        </NavbarToggler> */}
+        <NavbarToggler className="d-md-down-none" onClick={this.logout}>
+          <i className="icon-logout"></i>
         </NavbarToggler>
       </header>
     );

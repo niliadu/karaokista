@@ -6,6 +6,7 @@ import artists from "./artists";
 import musics from "./musics";
 import setlist from "./setlist";
 import frontSongsList from "./frontSongsList";
+import login from "./login";
 
 export default combineReducers({
     global, 
@@ -13,5 +14,6 @@ export default combineReducers({
     artists,
     musics, 
     setlist,
-    frontSongsList
+    frontSongsList,
+    login
 });

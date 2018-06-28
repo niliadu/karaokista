@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Link, Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, } from 'react-router-dom';
 import {Container} from 'reactstrap';
 import Header from '../../components/Header/';
 import Sidebar from '../../components/Sidebar/';
@@ -12,6 +12,7 @@ import Dashboard  from './views/Dashboard';
 import Venues from './views/Venues';
 import Artists from './views/Artists';
 import Musics from "./views/Musics";
+import Page404 from "../site/pages/Page404"
 
 class Admin extends Component {
   render() {
@@ -29,10 +30,10 @@ class Admin extends Component {
                 <Route path="/admin/venues" name="Venues" component={Venues}/>
                 <Route path="/admin/artists" name="Artists" component={Artists}/>
                 <Route path="/admin/musics" name="Musics" component={Musics}/>
+                <Route component={Page404}/>
               </Switch>
             </Container>
           </main>
-          <Aside />
         </div>
         <ToastContainer/>
         <Footer />
