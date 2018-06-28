@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import store from "../store";
 
 export default function loginReducer(state={
-    loggedIn: true,
+    loggedIn: false,
 }, action){
     switch(action.type){
         case "USER_LOGGED_IN":{
