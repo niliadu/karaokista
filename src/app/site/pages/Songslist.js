@@ -186,7 +186,7 @@ class Songslist extends Component {
       songToAddInSetlist
     } = this.state;
 
-    const mappedList = Object.keys(list).map((id, i) => {
+    const mappedList = Object.keys(list).filter((id, i) => i < 100).map((id, i) => {
       return (
         <div className="row" key={"row_" + i}>
           <div className="col-md-10">
@@ -215,7 +215,7 @@ class Songslist extends Component {
     return (
       <Container>
         <br />
-          <br />
+        <br />
         <div className="animated fadeIn">
           <Link to="/setlist">GO TO SETLIST</Link>
           <Button color={liveButtonColor} className="pull-right">Live Stream {onOff}</Button>
