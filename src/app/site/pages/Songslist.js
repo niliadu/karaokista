@@ -41,6 +41,7 @@ class Songslist extends Component {
   }
   componentWillMount() {
     globalActions.setCurrentAdminView("songslist");
+    globalActions.getLiveIsON();
     songsActions.getMusics();
     artistsActions.getArtists();
   }
@@ -214,7 +215,7 @@ class Songslist extends Component {
 
     return (
       <Container>
-        <br />
+        <Link className="pull-right" to="/admin">Admin</Link>
         <br />
         <div className="animated fadeIn">
           <Link to="/setlist">GO TO SETLIST</Link>

@@ -49,7 +49,7 @@ class Dashboard extends Component {
 
   componentWillMount() {
     globalActions.setCurrentAdminView("dashboard");
-    dashboardActions.getGlobals();
+    globalActions.getLiveIsON();
     musicsActions.getMusics();
     artistsActions.getArtists();
     setlistActions.getCurrentSongs();

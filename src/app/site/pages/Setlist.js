@@ -25,6 +25,7 @@ class Setlist extends Component {
 
   componentWillMount() {
     globalActions.setCurrentAdminView("setlist");
+    globalActions.getLiveIsON();
     setlistActions.getCurrentSongs();
   }
 

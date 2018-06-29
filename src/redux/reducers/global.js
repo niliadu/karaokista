@@ -10,11 +10,10 @@ export default function globalReducer(state={
                 };
             break;
         }
-        case "GLOBALS_RECEVIED":{
-            global = action.value;
+        case "LIVE_ON_RECEVIED":{
             state = {
-                ...global,
-                currentView: state.currentView
+                ...state,
+                liveIsON: action.value
                 };
             break;
         }

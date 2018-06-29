@@ -6,7 +6,7 @@ import {
   CardGroup,
   Col,
   Container,
-  Input,
+  Form, Input,
   Row
 } from 'reactstrap';
 import { Redirect } from "react-router-dom";
@@ -44,12 +44,15 @@ export default class Login extends Component {
     });
   }
 
-  login() {
+  login(e) {
+
+    e.preventDefault();
+
     const email = this.state.emailValue;
     const password = this.state.passwordValue;
-
+    console.log("entrou");
     if (email == "" || password == "") return;
-
+    
     loginActions.login(email, password);
     this.setState({
       ...this.state,
@@ -59,8 +62,8 @@ export default class Login extends Component {
   }
 
   render() {
-    
-    if(this.props.loggedIn){
+
+    if (this.props.loggedIn) {
       return (<Redirect to="/admin" />);
     }
 
@@ -71,37 +74,39 @@ export default class Login extends Component {
             <Col md="5">
               <CardGroup>
                 <Card className="p-4">
-                  <CardBody>
-                    <h1>Login</h1>
-                    <p className="text-muted">Sign In to your account</p>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      onChange={this.updateInputValue.bind(this, 'email')}
-                      value={this.state.emailValue}
-                    />
-                    <br />
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      onChange={this.updateInputValue.bind(this, 'password')}
-                      value={this.state.passwordValue}
-                    />
-                    <br />
-                    <Row>
-                      <Col xs="6">
-                        <Button color="primary" className="px-4" onClick={this.login.bind(this)}>Login</Button>
-                      </Col>
-                      {/* <Col xs="6" className="text-right">
+                  <CardBody>,
+                    <Form onSubmit={this.login.bind(this)}>
+                      <h1>Login</h1>
+                      <p className="text-muted">Sign In to your account</p>
+                      <Input
+                        type="email"
+                        placeholder="Email"
+                        onChange={this.updateInputValue.bind(this, 'email')}
+                        value={this.state.emailValue}
+                      />
+                      <br />
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        onChange={this.updateInputValue.bind(this, 'password')}
+                        value={this.state.passwordValue}
+                      />
+                      <br />
+                      <Row>
+                        <Col xs="6">
+                          <Button type="submit" color="primary" className="px-4" >Login</Button>
+                        </Col>
+                        {/* <Col xs="6" className="text-right">
                         <Button color="link" className="px-0">Forgot password?</Button>
                       </Col> */}
-                    </Row>
+                      </Row>
+                    </Form>
                   </CardBody>
                 </Card>
               </CardGroup>
             </Col>
           </Row>
-          <ToastContainer/>
+          <ToastContainer />
         </Container>
       </div>
     )
