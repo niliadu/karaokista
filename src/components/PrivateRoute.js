@@ -11,8 +11,9 @@ import { connect } from 'react-redux';
 })
 
 export default class PrivateRoute extends Component {
-
+  
   render() {
+    console.log(this.props.loggedIn)
     return (
       <Route {...this.rest} render={(props) => {
 

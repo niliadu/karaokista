@@ -10,7 +10,7 @@ const middlewares = applyMiddleware(promise());
 export default createStore(
   reducers, 
   middlewares,
-  // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
 /*to use the store use:

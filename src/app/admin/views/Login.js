@@ -50,7 +50,7 @@ export default class Login extends Component {
 
     const email = this.state.emailValue;
     const password = this.state.passwordValue;
-    console.log("entrou");
+    
     if (email == "" || password == "") return;
     
     loginActions.login(email, password);
